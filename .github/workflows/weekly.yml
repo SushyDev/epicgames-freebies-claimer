@@ -1,23 +1,17 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Node.js CI
-
+name: EFC
 on:
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '0 0 * * 0'
-
+    workflow_dispatch:
+    schedule:
+        - cron: '0 18 * * 4'
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-    - run: npm install
-    - run: npm test
+    EFC:
+        name: Claim Freebie
+        runs-on: ubuntu-latest
+        steps:
+            - name: Claim
+              env:
+                  EG_AUTH_JSON: ${{ secrets.EG_AUTH_JSON }}
+              run: |
+                  echo "$EG_AUTH_JSON" > $GITHUB_WORKSPACE/device_auths.json
+                  docker run --rm --pull always --volume "$GITHUB_WORKSPACE/device_auths.json:/app/device_auths.json" ghcr.io/jackblk/epicgames-freebies-claimer:latest
